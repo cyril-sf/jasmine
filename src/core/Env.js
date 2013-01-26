@@ -141,11 +141,19 @@ jasmine.Env.prototype.afterEach = function(afterEachFunction) {
 
 };
 
-jasmine.Env.prototype.xdescribe = function(desc, specDefinitions) {
-  return {
-    execute: function() {
-    }
-  };
+jasmine.Env.prototype.xdescribe = function(description, specDefinitions) {
+  var suite = new jasmine.Suite(this, description, function() {}, this.currentSuite);
+  var parentSuite = this.currentSuite;
+  if (parentSuite) {
+    parentSuite.add(suite);
+  } else {
+    this.currentRunner_.add(suite);
+  }
+
+  console.error('env');
+  this.currentSuite = parentSuite;
+
+  return suite;
 };
 
 jasmine.Env.prototype.it = function(description, func) {
